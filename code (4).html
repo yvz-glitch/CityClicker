@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+            color: #00ffcc;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px #00ffcc, inset 0 0 20px rgba(0, 255, 204, 0.1);
+            border: 2px solid #00ffcc;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+            margin-bottom: 20px;
+        }
+
+        h2, h3 {
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        #city-naming {
+            margin-bottom: 20px;
+        }
+
+        #city-name {
+            padding: 10px;
+            font-size: 1.2em;
+            border: 2px solid #00ffcc;
+            background: #111;
+            color: #00ffcc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #start-btn {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #00ffcc;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ffcc;
+        }
+
+        #city-display {
+            margin: 20px 0;
+        }
+
+        #city-icon {
+            font-size: 120px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 20px;
+            position: relative;
+        }
+
+        #city-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #ff0080;
+        }
+
+        .clickable:active {
+            animation: click-burst 0.5s;
+        }
+
+        @keyframes click-burst {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        #points {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        #shop {
+            margin: 20px 0;
+        }
+
+        .upgrade {
+            background: linear-gradient(45deg, #333, #555);
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 15px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            display: inline-block;
+            width: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade:hover {
+            background: linear-gradient(45deg, #00ffcc, #00cccc);
+            color: #000;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 204, 0.8);
+        }
+
+        .upgrade:active {
+            animation: upgrade-flash 0.2s;
+        }
+
+        @keyframes upgrade-flash {
+            0% { background: #fff; }
+            100% { background: linear-gradient(45deg, #00ffcc, #00cccc); }
+        }
+
+        #empire {
+            margin-top: 20px;
+        }
+
+        #buildings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            justify-items: center;
+        }
+
+        .building {
+            padding: 15px;
+            background: linear-gradient(45deg, #222, #444);
+            border-radius: 10px;
+            border: 1px solid #00ffcc;
+            animation: fade-in 0.5s, pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .building:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 204, 0.6); }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00ffcc;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 1s ease-out forwards;
+        }
+
+        @keyframes particle-float {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(0); }
+        }
+
+        .floating-number {
+            position: absolute;
+            color: #ff0080;
+            font-size: 1.5em;
+            font-weight: bold;
+            pointer-events: none;
+            animation: float-up 1s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>City Clicker</h1>
+        <div id="city-naming">
+            <input type="text" id="city-name" placeholder="Name your city">
+            <button id="start-btn">Start Empire</button>
+        </div>
+        <div id="game" style="display: none;">
+            <div id="city-display">
+                <h2 id="city-title">Your City</h2>
+                <div id="city-icon" class="clickable">🏙️</div>
+                <p id="points">Points: 0</p>
+            </div>
+            <div id="shop">
+                <h3>Upgrades</h3>
+                <button class="upgrade" data-cost="10" data-type="skyscraper">🏢 Skyscraper (Auto +1/sec) - 10 pts</button>
+                <button class="upgrade" data-cost="50" data-type="factory">🏭 Factory (Auto +5/sec) - 50 pts</button>
+                <button class="upgrade" data-cost="100" data-type="empire">🌆 Expand Empire (Unlocks more) - 100 pts</button>
+                <button class="upgrade" data-cost="200" data-type="park">🌳 Park (Happiness Boost +10%) - 200 pts</button>
+                <button class="upgrade" data-cost="300" data-type="powerplant">⚡ Power Plant (Double Auto Rate) - 300 pts</button>
+                <button class="upgrade" data-cost="500" data-type="megacity">🏙️ Mega City (Triple Points) - 500 pts</button>
+                <button class="upgrade" data-cost="750" data-type="mall">🛍️ Mall (Auto +10/sec) - 750 pts</button>
+                <button class="upgrade" data-cost="1000" data-type="hospital">🏥 Hospital (Happiness +20%) - 1000 pts</button>
+                <button class="upgrade" data-cost="1250" data-type="airport">✈️ Airport (Auto +15/sec) - 1250 pts</button>
+                <button class="upgrade" data-cost="1500" data-type="researchlab">🔬 Research Lab (Quadruple Multipliers) - 1500 pts</button>
+                <button class="upgrade" data-cost="2000" data-type="bank">🏦 Bank (Save 10% Points on Reset) - 2000 pts</button>
+                <button class="upgrade" data-cost="2500" data-type="stadium">🏟️ Stadium (Auto +20/sec) - 2500 pts</button>
+                <button class="upgrade" data-cost="3000" data-type="university">🎓 University (Happiness +30%) - 3000 pts</button>
+                <button class="upgrade" data-cost="4000" data-type="spaceport">🚀 Spaceport (Auto +50/sec) - 4000 pts</button>
+                <button class="upgrade" data-cost="5000" data-type="utopia">🌈 Utopia (Max Multipliers x10) - 5000 pts</button>
+                <button class="upgrade" data-cost="6000" data-type="fortress">🏰 Fortress (Auto +100/sec) - 6000 pts</button>
+                <button class="upgrade" data-cost="7500" data-type="casino">🎰 Casino (Random Bonus Points) - 7500 pts</button>
+                <button class="upgrade" data-cost="10000" data-type="timeportal">⏳ Time Portal (Rewind Time for Points) - 10000 pts</button>
+                <button class="upgrade" data-cost="15000" data-type="galaxy">🌌 Galaxy Empire (Infinite Auto) - 15000 pts</button>
+            </div>
+            <div id="empire">
+                <h3>Your Empire</h3>
+                <div id="buildings"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let points = 0;
+        let autoPoints = 0;
+        let cityName = '';
+        let happinessMultiplier = 1;
+        let pointMultiplier = 1;
+        let savedPoints = 0;
+
+        // Web Audio API for sounds
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration, type = 'sine') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = type;
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            cityName = document.getElementById('city-name').value || 'Unnamed City';
+            document.getElementById('city-title').textContent = cityName;
+            document.getElementById('city-naming').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            playSound(800, 0.2, 'square'); // Start sound
+            setInterval(() => {
+                points += Math.floor(autoPoints * happinessMultiplier * pointMultiplier);
+                updateDisplay();
+            }, 1000);
+        });
+
+        document.getElementById('city-icon').addEventListener('click', (e) => {
+            points += Math.floor(1 * pointMultiplier);
+            updateDisplay();
+            playSound(600, 0.1); // Click sound
+            createParticles(e.clientX, e.clientY);
+            createFloatingNumber(e.clientX, e.clientY, '+1');
+        });
+
+        document.querySelectorAll('.upgrade').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cost = parseInt(btn.dataset.cost);
+                const type = btn.dataset.type;
+                if (points >= cost) {
+                    points -= cost;
+                    if (type === 'skyscraper') autoPoints += 1;
+                    else if (type === 'factory') autoPoints += 5;
+                    else if (type === 'empire') {
+                        alert('Empire expanded! More features unlocked.');
+                    }
+                    else if (type === 'park') happinessMultiplier += 0.1;
+                    else if (type === 'powerplant') autoPoints *= 2;
+                    else if (type === 'megacity') pointMultiplier *= 3;
+                    else if (type === 'mall') autoPoints += 10;
+                    else if (type === 'hospital') happinessMultiplier += 0.2;
+                    else if (type === 'airport') autoPoints += 15;
+                    else if (type === 'researchlab') { happinessMultiplier *= 4; pointMultiplier *= 4; }
+                    else if (type === 'bank') savedPoints = Math.floor(points * 0.1);
+                    else if (type === 'stadium') autoPoints += 20;
+                    else if (type === 'university') happinessMultiplier += 0.3;
+                    else if (type === 'spaceport') autoPoints += 50;
+                    else if (type === 'utopia') { happinessMultiplier *= 10; pointMultiplier *= 10; }
+                    else if (type === 'fortress') autoPoints += 100;
+                    else if (type === 'casino') points += Math.floor(Math.random() * 1000);
+                    else if (type === 'timeportal') points += savedPoints;
+                    else if (type === 'galaxy') autoPoints = Infinity;
+                    addBuilding(type);
+                    updateDisplay();
+                    playSound(1000, 0.3, 'triangle'); // Upgrade sound
+                }
+            });
+        });
+
+        function updateDisplay() {
+            document.getElementById('points').textContent = `Points: ${points}`;
+        }
+
+        function addBuilding(type) {
+            const buildingsDiv = document.getElementById('buildings');
+            const building = document.createElement('div');
+            building.className = 'building';
+            building.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            buildingsDiv.appendChild(building);
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x + (Math.random() - 0.5) * 50}px`;
+                particle.style.top = `${y + (Math.random() - 0.5) * 50}px`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        function createFloatingNumber(x, y, text) {
+            const number = document.createElement('div');
+            number.className = 'floating-number';
+            number.textContent = text;
+            number.style.left = `${x}px`;
+            number.style.top = `${y}px`;
+            document.body.appendChild(number);
+            setTimeout(() => number.remove(), 1000);
+        }
+    </script>
+</body>
+</html>
