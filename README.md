@@ -1,5 +1,4 @@
-
-[City Clicker](https://yvz-glitch.github.io/CityClicker/)
+# [City Clicker](https://yvz-glitch.github.io/CityClicker/)
 
 ### 🏙️ **1. Build & Grow!**
 
